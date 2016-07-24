@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WebSocket Echo Test</title>
+    <script language="javascript" type="text/javascript">
+	    const wsUri = "ws://localhost:8181/hello";
+	    let output, input, send;
+
+	    function init() {
+		    output = document.getElementById("output");
+		    input = document.getElementById("input");
+		    setupWebSocket();
+	    }
+
+	    function setupWebSocket() {
+		    websocket = new WebSocket(wsUri, "hello");
+                    websocket.onopen = evt => onOpen(evt);
+		    websocket.onclose = evt => onClose(evt);
+		    websocket.onmessage = evt => onMessage(evt);
+		    websocket.onerror = evt => onError(evt);
+	    }
+
+	    function onOpen(evt) {
+		    writeToScreen("CONNECTED");
+	    }
+
+	    function onClose(evt) {
+		    writeToScreen("DISCONNECTED");
+	    }
+
+	    function onMessage(evt) {
+		    writeToScreen(`<span style="color: blue;">RESPONSE: ${evt.data}<\/span>`);
+	    }
+
+	    function onError(evt) {
+		    writeToScreen(`<span style="color: red;">ERROR:<\/span> ${evt.data}`);
+	    }
+
+	    function sendMessage() {
+		    writeToScreen(`<span style="color: red;">SENDING:<\/span> ${input.value}`);
+		    websocket.send(input.value);
+	    }
+
+	    function writeToScreen(message) {
+		    output.innerHTML = message
+	    }
+
+	    window.addEventListener("load", init, false);
+    </script>
+</head>
+
+<body>
+	<h1>WebSocket Test</h1>
+	<p>Click the send button to transmit the text to the WebSocket server. The server will echo back the text.</p>
+	<textarea id="input">Sample Text</textarea>
+	<button onclick="sendMessage()">Send</button>
+	<div id="output"</div>
+</body>
+</html>
