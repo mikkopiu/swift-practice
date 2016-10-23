@@ -1,6 +1,10 @@
 FROM ubuntu:14.04
 MAINTAINER Mikko Piuhola <mikko.piuhola@gmail.com>
 
+#
+# Base container
+#
+
 # Helper env variables
 ENV SWIFT_BRANCH swift-3.0-release
 ENV SWIFT_VERSION swift-3.0-RELEASE
@@ -9,7 +13,7 @@ ENV SWIFT_ARCHIVE_NAME $SWIFT_VERSION-$SWIFT_PLATFORM
 
 # Install dependencies
 RUN apt-get update \
- && apt-get install -y build-essential libedit-dev wget clang libicu-dev \
+ && apt-get install -y build-essential libedit-dev wget clang libicu-dev libicu52 libxml2 curl \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -33,4 +37,17 @@ RUN apt-get remove -y wget
 # Swift path
 ENV PATH /usr/bin:$PATH
 
-CMD swift --version
+#
+# Application specifics
+#
+
+# Add source code
+RUN mkdir /app
+WORKDIR /app
+ADD Package.swift ./
+ADD Sources ./
+
+# Build it
+RUN swift build
+
+CMD .build/debug/RockPaperScissors
